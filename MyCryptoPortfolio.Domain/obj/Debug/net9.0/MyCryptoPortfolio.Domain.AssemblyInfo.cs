@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MyCryptoPortfolio.Domain")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+33a3456ee32aa70c57523881491ed417714d3521")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ac916c06aa30615e6da7ab6a9b567f131c12180c")]
 [assembly: System.Reflection.AssemblyProductAttribute("MyCryptoPortfolio.Domain")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MyCryptoPortfolio.Domain")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

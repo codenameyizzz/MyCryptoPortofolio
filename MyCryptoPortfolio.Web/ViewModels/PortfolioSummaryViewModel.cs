@@ -23,5 +23,8 @@ namespace MyCryptoPortfolio.Web.ViewModels
         
         // Menghitung Persentase Profit/Loss
         public decimal PnLPercentage => TotalCostBasis == 0 ? 0 : (UnrealizedPnL / TotalCostBasis) * 100;
+
+        // --- TAMBAHAN BARU: Persentase Alokasi ---
+        public decimal AllocationPercentage { get; set; }
     }
 }

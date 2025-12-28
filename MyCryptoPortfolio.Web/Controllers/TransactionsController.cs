@@ -41,6 +41,23 @@ namespace MyCryptoPortfolio.Web.Controllers
                 asset.CurrentMarketPrice = await _priceService.GetPriceAsync(asset.Ticker);
             }
 
+            // 3. --- LOGIC BARU: HITUNG ALOKASI ---
+            // Hitung total nilai portofolio saat ini (Current Value)
+            decimal currentPortfolioValue = holdingsList.Sum(h => h.CurrentTotalValue);
+
+            // Hitung persentase untuk setiap aset
+            foreach (var asset in holdingsList)
+            {
+                if (currentPortfolioValue > 0)
+                {
+                    asset.AllocationPercentage = (asset.CurrentTotalValue / currentPortfolioValue) * 100;
+                }
+                else
+                {
+                    asset.AllocationPercentage = 0;
+                }
+            }
+
             var viewModel = new PortfolioSummaryViewModel
             {
                 TotalInvestmentValue = holdingsList.Sum(h => h.TotalCostBasis),
