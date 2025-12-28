@@ -7,9 +7,9 @@ namespace MyCryptoPortfolio.Infrastructure.Services
     public class CoinGeckoPriceService : IPriceService
     {
         private readonly HttpClient _httpClient;
-        private readonly IMemoryCache _cache; // Memori penyimpanan sementara
+        private readonly IMemoryCache _cache; 
 
-        // Daftar Aset yang Didukung (Bisa ditambah manual)
+        // Daftar Aset yang Didukung (tambah manual sesuai kebutuhan)
         public static readonly Dictionary<string, string> SupportedCoins = new()
         {
             { "BTC", "bitcoin" },
@@ -26,7 +26,7 @@ namespace MyCryptoPortfolio.Infrastructure.Services
             { "MATIC", "matic-network" },
             { "SHIB", "shiba-inu" },
             { "LTC", "litecoin" },
-            // Tambahkan koin lain di sini, format: { "TICKER", "id-coingecko" }
+            // add more, format: { "TICKER", "id-coingecko" }
         };
 
         public CoinGeckoPriceService(HttpClient httpClient, IMemoryCache cache)
@@ -38,38 +38,33 @@ namespace MyCryptoPortfolio.Infrastructure.Services
         public async Task<decimal> GetPriceAsync(string ticker)
         {
             string cleanTicker = ticker.ToUpper().Trim();
-            string cacheKey = $"PRICE_{cleanTicker}"; // Kunci memori, misal "PRICE_BTC"
+            string cacheKey = $"PRICE_{cleanTicker}"; 
 
-            // Cek Memori dulu (Cache)
             return await _cache.GetOrCreateAsync(cacheKey, async entry =>
             {
-                // ATURAN 1: Simpan harga selama 10 menit. 
-                // Selama 10 menit ke depan, aplikasi TIDAK AKAN tanya ke API lagi.
-                // Ini membuat grafik STABIL dan loading INSTAN.
+                // Simpan harga selama 10 menit. 
+                // Selama 10 menit ke depan, tidak tanya ke API lagi.
                 entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10);
 
                 if (!SupportedCoins.TryGetValue(cleanTicker, out string coinId))
                 {
-                    return 0m; // Aset tidak dikenal
+                    return 0m; 
                 }
 
                 try
                 {
-                    // Tambahkan User-Agent agar tidak dianggap bot spammer
                     _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("MyCryptoPortfolio/1.0");
 
                     var url = $"https://api.coingecko.com/api/v3/simple/price?ids={coinId}&vs_currencies=idr";
                     var response = await _httpClient.GetStringAsync(url);
                     var json = JObject.Parse(response);
 
-                    // Ambil harga
                     var price = json[coinId]?["idr"]?.Value<decimal>();
                     return price ?? 0m;
                 }
                 catch
                 {
-                    // ATURAN 2: Jika API Gagal (Rate Limit/Internet Mati),
-                    // Jangan simpan nilai 0 ini lama-lama. Coba lagi dalam 2 detik.
+                    // jika ika API Gagal (Rate Limit/Internet Mati),
                     entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(2);
                     return 0m; 
                 }

@@ -41,11 +41,10 @@ namespace MyCryptoPortfolio.Web.Controllers
                 asset.CurrentMarketPrice = await _priceService.GetPriceAsync(asset.Ticker);
             }
 
-            // 3. --- LOGIC BARU: HITUNG ALOKASI ---
-            // Hitung total nilai portofolio saat ini (Current Value)
+            // hitung total nilai portofolio saat ini (Current Value)
             decimal currentPortfolioValue = holdingsList.Sum(h => h.CurrentTotalValue);
 
-            // Hitung persentase untuk setiap aset
+            // persentase untuk setiap aset
             foreach (var asset in holdingsList)
             {
                 if (currentPortfolioValue > 0)
@@ -72,41 +71,32 @@ namespace MyCryptoPortfolio.Web.Controllers
             return View(viewModel);
         }
 
-        // --- 1. HALAMAN HISTORY DENGAN FILTER ---
-        // GET: /Transactions/History
         public IActionResult History(DateTime? startDate, DateTime? endDate)
         {
-            // Mulai query
             var query = _context.Transactions.AsQueryable();
 
-            // Filter jika user memasukkan tanggal
             if (startDate.HasValue)
             {
-                // Set ke jam 00:00:00 (awal hari)
-                // Pastikan Kind-nya UTC agar cocok dengan database PostgreSQL
+                // set to jam 00:00:00 
                 var start = DateTime.SpecifyKind(startDate.Value.Date, DateTimeKind.Utc);
                 query = query.Where(t => t.Date >= start);
             }
 
             if (endDate.HasValue)
             {
-                // Set ke jam 23:59:59 (akhir hari)
                 var end = DateTime.SpecifyKind(endDate.Value.Date.AddDays(1).AddTicks(-1), DateTimeKind.Utc);
                 query = query.Where(t => t.Date <= end);
             }
 
-            // Urutkan dari terbaru
             var transactions = query.OrderByDescending(t => t.Date).ToList();
 
-            // Simpan tanggal yang dipilih di ViewBag agar form filter tetap terisi
             ViewBag.StartDate = startDate?.ToString("yyyy-MM-dd");
             ViewBag.EndDate = endDate?.ToString("yyyy-MM-dd");
 
             return View(transactions);
         }
 
-        // --- 2. EXPORT KE CSV ---
-        // GET: /Transactions/ExportToCsv
+        // export to csv
         public IActionResult ExportToCsv(DateTime? startDate, DateTime? endDate)
         {
             var query = _context.Transactions.AsQueryable();
@@ -119,17 +109,15 @@ namespace MyCryptoPortfolio.Web.Controllers
 
             var transactions = query.OrderByDescending(t => t.Date).ToList();
 
-            // Buat String CSV Manual (Cara paling simpel tanpa library tambahan)
             var builder = new System.Text.StringBuilder();
             builder.AppendLine("Date,Ticker,Type,Price,Quantity,Fee,Total Amount"); // Header
 
             foreach (var t in transactions)
             {
-                // Format baris CSV: "2023-12-01,BTC,Buy,500000,1,0,500000"
+                // csv format: "2023-12-01,BTC,Buy,500000,1,0,500000"
                 builder.AppendLine($"{t.Date:yyyy-MM-dd HH:mm},{t.Ticker},{t.Type},{t.Price},{t.Quantity},{t.Fee},{t.TotalAmount}");
             }
 
-            // Return sebagai file download
             return File(System.Text.Encoding.UTF8.GetBytes(builder.ToString()), "text/csv", "TransactionHistory.csv");
         }
 

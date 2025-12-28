@@ -11,20 +11,16 @@ namespace MyCryptoPortfolio.Web.ViewModels
     {
         public string Ticker { get; set; } = string.Empty;
         public decimal TotalQuantity { get; set; }
-        public decimal AverageBuyPrice { get; set; } // Harga Beli Rata-rata
-        public decimal TotalCostBasis { get; set; } // Total Modal Keluar
+        public decimal AverageBuyPrice { get; set; } 
+        public decimal TotalCostBasis { get; set; } 
 
-        // --- TAMBAHAN BARU ---
-        public decimal CurrentMarketPrice { get; set; } // Harga Pasar Live
-        public decimal CurrentTotalValue => TotalQuantity * CurrentMarketPrice; // Nilai Aset Sekarang
-        
-        // Menghitung Profit/Loss dalam Rupiah/Dollar
+        public decimal CurrentMarketPrice { get; set; } 
+        public decimal CurrentTotalValue => TotalQuantity * CurrentMarketPrice; 
+
         public decimal UnrealizedPnL => CurrentTotalValue - TotalCostBasis; 
         
-        // Menghitung Persentase Profit/Loss
         public decimal PnLPercentage => TotalCostBasis == 0 ? 0 : (UnrealizedPnL / TotalCostBasis) * 100;
 
-        // --- TAMBAHAN BARU: Persentase Alokasi ---
         public decimal AllocationPercentage { get; set; }
     }
 }

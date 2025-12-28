@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Mvc.Rendering; // Untuk Dropdown
+using Microsoft.AspNetCore.Mvc.Rendering; // dropdown
 
 namespace MyCryptoPortfolio.Web.ViewModels
 {

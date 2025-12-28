@@ -98,7 +98,7 @@
         const priceInput = document.getElementById('priceInput');
         const loadingIcon = document.getElementById('priceLoading');
         const liveBadge = document.getElementById('liveBadge');
-        const tickerError = document.getElementById('tickerError'); // Pesan error baru
+        const tickerError = document.getElementById('tickerError'); 
 
         tickerInput.addEventListener('change', async function() {
             const ticker = this.value;
@@ -107,7 +107,7 @@
                 loadingIcon.classList.remove('hidden');
                 priceInput.classList.add('opacity-50');
                 liveBadge.classList.add('hidden');
-                tickerError.classList.add('hidden'); // Sembunyikan error lama
+                tickerError.classList.add('hidden'); 
 
                 try {
                     const response = await fetch(`/Transactions/GetLatestPrice?ticker=${ticker}`);
@@ -116,7 +116,6 @@
                         const price = await response.json();
                         
                         if (price > 0) {
-                            // SUKSES: Harga Ditemukan
                             priceInput.value = price;
                             priceInput.classList.add('bg-green-50', 'text-green-700', 'border-green-300');
                             setTimeout(() => {
@@ -124,10 +123,10 @@
                             }, 1000);
                             liveBadge.classList.remove('hidden');
                         } else {
-                            // GAGAL: Harga 0 (Koin tidak terdaftar)
+                            
                             priceInput.value = 0;
-                            tickerError.classList.remove('hidden'); // Tampilkan pesan error
-                            tickerError.innerText = "⚠️ Koin '" + ticker + "' tidak didukung atau API sibuk.";
+                            tickerError.classList.remove('hidden'); 
+                            tickerError.innerText = "Koin '" + ticker + "' tidak didukung atau API sibuk.";
                         }
                     }
                 } catch (error) {
