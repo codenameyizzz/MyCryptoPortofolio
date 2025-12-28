@@ -1,0 +1,51 @@
+@{
+    ViewData["Title"] = "Market Overview";
+}
+
+<div class="space-y-6">
+    <div class="flex justify-between items-center">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-800">📈 Live Market</h1>
+            <p class="text-gray-500">Pantau pergerakan harga pasar global secara real-time.</p>
+        </div>
+    </div>
+
+    <div class="h-[600px] w-full bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
+        <div class="tradingview-widget-container" style="height:100%;width:100%">
+            <div class="tradingview-widget-container__widget" style="height:calc(100% - 32px);width:100%"></div>
+            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
+            {
+            "autosize": true,
+            "symbol": "BINANCE:BTCUSDT",
+            "interval": "D",
+            "timezone": "Asia/Jakarta",
+            "theme": "light",
+            "style": "1",
+            "locale": "en",
+            "enable_publishing": false,
+            "allow_symbol_change": true,
+            "calendar": false,
+            "support_host": "https://www.tradingview.com"
+            }
+            </script>
+        </div>
+    </div>
+    <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
+        <h3 class="font-bold text-gray-700 mb-4">🔥 Top Crypto Assets</h3>
+        <div class="tradingview-widget-container">
+            <div class="tradingview-widget-container__widget"></div>
+            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-screener.js" async>
+            {
+            "width": "100%",
+            "height": 400,
+            "defaultColumn": "overview",
+            "defaultScreen": "general",
+            "market": "crypto",
+            "showToolbar": true,
+            "colorTheme": "light",
+            "locale": "en"
+            }
+            </script>
+        </div>
+    </div>
+</div>

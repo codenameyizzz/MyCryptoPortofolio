@@ -1,0 +1,16 @@
+D:\.NET-Learn\MyCryptoPortofolio\MyCryptoPortfolio.Application\bin\Debug\net9.0\MyCryptoPortfolio.Application.deps.json
+D:\.NET-Learn\MyCryptoPortofolio\MyCryptoPortfolio.Application\bin\Debug\net9.0\MyCryptoPortfolio.Application.dll
+D:\.NET-Learn\MyCryptoPortofolio\MyCryptoPortfolio.Application\bin\Debug\net9.0\MyCryptoPortfolio.Application.pdb
+D:\.NET-Learn\MyCryptoPortofolio\MyCryptoPortfolio.Application\bin\Debug\net9.0\MyCryptoPortfolio.Domain.dll
+D:\.NET-Learn\MyCryptoPortofolio\MyCryptoPortfolio.Application\bin\Debug\net9.0\MyCryptoPortfolio.Domain.pdb
+D:\.NET-Learn\MyCryptoPortofolio\MyCryptoPortfolio.Application\obj\Debug\net9.0\MyCryptoPortfolio.Application.csproj.AssemblyReference.cache
+D:\.NET-Learn\MyCryptoPortofolio\MyCryptoPortfolio.Application\obj\Debug\net9.0\MyCryptoPortfolio.Application.GeneratedMSBuildEditorConfig.editorconfig
+D:\.NET-Learn\MyCryptoPortofolio\MyCryptoPortfolio.Application\obj\Debug\net9.0\MyCryptoPortfolio.Application.AssemblyInfoInputs.cache
+D:\.NET-Learn\MyCryptoPortofolio\MyCryptoPortfolio.Application\obj\Debug\net9.0\MyCryptoPortfolio.Application.AssemblyInfo.cs
+D:\.NET-Learn\MyCryptoPortofolio\MyCryptoPortfolio.Application\obj\Debug\net9.0\MyCryptoPortfolio.Application.csproj.CoreCompileInputs.cache
+D:\.NET-Learn\MyCryptoPortofolio\MyCryptoPortfolio.Application\obj\Debug\net9.0\MyCryptoPortfolio.Application.sourcelink.json
+D:\.NET-Learn\MyCryptoPortofolio\MyCryptoPortfolio.Application\obj\Debug\net9.0\MyCrypto.80262622.Up2Date
+D:\.NET-Learn\MyCryptoPortofolio\MyCryptoPortfolio.Application\obj\Debug\net9.0\MyCryptoPortfolio.Application.dll
+D:\.NET-Learn\MyCryptoPortofolio\MyCryptoPortfolio.Application\obj\Debug\net9.0\refint\MyCryptoPortfolio.Application.dll
+D:\.NET-Learn\MyCryptoPortofolio\MyCryptoPortfolio.Application\obj\Debug\net9.0\MyCryptoPortfolio.Application.pdb
+D:\.NET-Learn\MyCryptoPortofolio\MyCryptoPortfolio.Application\obj\Debug\net9.0\ref\MyCryptoPortfolio.Application.dll

@@ -1,0 +1,97 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - MyCuanPorto</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://unpkg.com/@@phosphor-icons/web"></script>
+
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+    </style>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            900: '#0c4a6e',
+                        },
+                        accent: {
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 text-slate-800 relative min-h-screen overflow-x-hidden">
+
+    <div class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+        <div class="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob"></div>
+        <div class="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000"></div>
+        <div class="absolute bottom-[-20%] left-[20%] w-[500px] h-[500px] bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-4000"></div>
+    </div>
+
+    <nav class="fixed w-full z-50 top-4 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-6xl mx-auto glass rounded-2xl shadow-sm hover:shadow-md transition duration-300">
+            <div class="flex justify-between h-16 px-6 items-center">
+                <a asp-controller="Transactions" asp-action="Index" class="flex items-center gap-2 group">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-brand-500 to-accent-500 flex items-center justify-center text-white font-bold text-lg shadow-lg group-hover:scale-110 transition">
+                        M
+                    </div>
+                    <span class="font-bold text-xl tracking-tight text-slate-800">CoinGecko<span class="text-brand-600">Porto</span></span>
+                </a>
+                
+                <div class="flex gap-1 bg-slate-100/50 p-1 rounded-xl">
+                    <a asp-controller="Transactions" asp-action="Index" 
+                       class="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Transactions" ? "bg-white text-brand-600 shadow-sm" : "text-slate-500 hover:text-slate-900 hover:bg-white/50")">
+                       Portfolio
+                    </a>
+                    <a asp-controller="Market" asp-action="Index" 
+                       class="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Market" ? "bg-white text-brand-600 shadow-sm" : "text-slate-500 hover:text-slate-900 hover:bg-white/50")">
+                       Market
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="pt-28 pb-12 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        @RenderBody()
+    </main>
+
+    <footer class="text-center py-8 text-slate-400 text-sm font-medium">
+        <p>&copy; CoinGecko</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

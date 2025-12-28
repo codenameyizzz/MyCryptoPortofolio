@@ -1,0 +1,56 @@
+@model MyCryptoPortfolio.Web.ViewModels.TransactionViewModel
+
+@{
+    ViewData["Title"] = "Edit Transaksi";
+}
+
+<div class="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-lg mt-10">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-gray-800">Edit Transaksi</h2>
+        <span class="bg-yellow-100 text-yellow-800 text-xs font-semibold px-2.5 py-0.5 rounded">Mode Edit</span>
+    </div>
+
+    <form asp-action="Edit" method="post">
+        <input type="hidden" asp-for="Id" />
+        
+        <div asp-validation-summary="ModelOnly" class="text-red-500 text-sm mb-4"></div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label asp-for="Ticker" class="block text-sm font-medium text-gray-700 mb-1"></label>
+                <input asp-for="Ticker" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 uppercase" />
+                <span asp-validation-for="Ticker" class="text-red-500 text-xs"></span>
+            </div>
+
+            <div>
+                <label asp-for="Date" class="block text-sm font-medium text-gray-700 mb-1"></label>
+                <input asp-for="Date" type="date" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500" />
+                <span asp-validation-for="Date" class="text-red-500 text-xs"></span>
+            </div>
+
+            <div>
+                <label asp-for="TransactionType" class="block text-sm font-medium text-gray-700 mb-1"></label>
+                <select asp-for="TransactionType" asp-items="Model.TypeOptions" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500"></select>
+            </div>
+
+            <div>
+                <label asp-for="Price" class="block text-sm font-medium text-gray-700 mb-1">Harga Beli</label>
+                <input asp-for="Price" type="number" step="any" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500" />
+                <span asp-validation-for="Price" class="text-red-500 text-xs"></span>
+            </div>
+
+            <div class="md:col-span-2">
+                <label asp-for="Quantity" class="block text-sm font-medium text-gray-700 mb-1">Jumlah Aset</label>
+                <input asp-for="Quantity" type="number" step="any" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500" />
+                <span asp-validation-for="Quantity" class="text-red-500 text-xs"></span>
+            </div>
+        </div>
+
+        <div class="mt-8 flex items-center justify-end gap-4">
+            <a asp-action="Index" class="text-gray-500 hover:text-gray-700 font-medium">Batal</a>
+            <button type="submit" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-6 rounded-lg transition duration-200">
+                Update Perubahan
+            </button>
+        </div>
+    </form>
+</div>

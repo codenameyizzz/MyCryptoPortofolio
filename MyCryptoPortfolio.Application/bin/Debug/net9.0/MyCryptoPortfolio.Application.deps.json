@@ -1,0 +1,39 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v9.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v9.0": {
+      "MyCryptoPortfolio.Application/1.0.0": {
+        "dependencies": {
+          "MyCryptoPortfolio.Domain": "1.0.0"
+        },
+        "runtime": {
+          "MyCryptoPortfolio.Application.dll": {}
+        }
+      },
+      "MyCryptoPortfolio.Domain/1.0.0": {
+        "runtime": {
+          "MyCryptoPortfolio.Domain.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "MyCryptoPortfolio.Application/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "MyCryptoPortfolio.Domain/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

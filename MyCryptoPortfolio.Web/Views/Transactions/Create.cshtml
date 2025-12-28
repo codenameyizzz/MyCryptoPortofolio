@@ -1,0 +1,72 @@
+@model MyCryptoPortfolio.Web.ViewModels.TransactionViewModel
+
+@{
+    ViewData["Title"] = "New Transaction";
+}
+
+<div class="min-h-[80vh] flex items-center justify-center">
+    <div class="w-full max-w-xl">
+        
+        <a asp-action="Index" class="inline-flex items-center text-slate-500 hover:text-slate-800 mb-6 transition">
+            <i class="ph ph-arrow-left text-lg mr-2"></i> Back to Dashboard
+        </a>
+
+        <div class="bg-white rounded-[2rem] shadow-xl border border-slate-100 overflow-hidden relative">
+            
+            <div class="h-2 bg-gradient-to-r from-brand-500 via-accent-500 to-pink-500"></div>
+            
+            <div class="p-8 sm:p-10">
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl font-extrabold text-slate-900">Add Asset</h2>
+                    <p class="text-slate-500 mt-2">Catat transaksi pembelian atau penjualan Anda.</p>
+                </div>
+
+                <form asp-action="Create" method="post" class="space-y-6">
+                    <div asp-validation-summary="ModelOnly" class="text-rose-500 text-sm text-center"></div>
+
+                    <div class="grid grid-cols-2 gap-6">
+                        
+                        <div class="col-span-2">
+                            <label asp-for="Ticker" class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Asset Ticker</label>
+                            <div class="relative">
+                                <i class="ph ph-currency-btc absolute left-4 top-3.5 text-xl text-slate-400"></i>
+                                <input asp-for="Ticker" class="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 transition uppercase placeholder:normal-case font-bold text-slate-800" placeholder="e.g. BTC" />
+                            </div>
+                            <span asp-validation-for="Ticker" class="text-rose-500 text-xs mt-1 block"></span>
+                        </div>
+
+                        <div class="col-span-2 sm:col-span-1">
+                            <label asp-for="TransactionType" class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Action</label>
+                            <select asp-for="TransactionType" asp-items="Model.TypeOptions" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 transition font-medium text-slate-700 appearance-none"></select>
+                        </div>
+
+                        <div class="col-span-2 sm:col-span-1">
+                            <label asp-for="Date" class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Date</label>
+                            <input asp-for="Date" type="date" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 transition font-medium text-slate-700" />
+                        </div>
+
+                        <div class="col-span-2 sm:col-span-1">
+                            <label asp-for="Price" class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Price (IDR)</label>
+                            <input asp-for="Price" type="number" step="any" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 transition font-medium text-slate-700" placeholder="0" />
+                        </div>
+
+                        <div class="col-span-2 sm:col-span-1">
+                            <label asp-for="Quantity" class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Quantity</label>
+                            <input asp-for="Quantity" type="number" step="any" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 transition font-medium text-slate-700" placeholder="0.00" />
+                        </div>
+                        
+                        <div class="col-span-2">
+                            <label asp-for="Fee" class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Fees (Optional)</label>
+                            <input asp-for="Fee" type="number" step="any" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 transition font-medium text-slate-700" placeholder="0" />
+                        </div>
+
+                    </div>
+
+                    <button type="submit" class="w-full mt-8 bg-slate-900 text-white font-bold py-4 rounded-xl shadow-lg hover:bg-brand-600 hover:shadow-brand-500/30 active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2">
+                        <i class="ph-bold ph-check"></i> Save Transaction
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
