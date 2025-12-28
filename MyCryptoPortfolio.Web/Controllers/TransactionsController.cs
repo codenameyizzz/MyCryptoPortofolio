@@ -72,6 +72,17 @@ namespace MyCryptoPortfolio.Web.Controllers
             return View(viewModel);
         }
 
+        // GET: /Transactions/History
+        public IActionResult History()
+        {
+            // Ambil SEMUA transaksi, urutkan dari yang terbaru
+            var transactions = _context.Transactions
+                .OrderByDescending(t => t.Date)
+                .ToList();
+
+            return View(transactions);
+        }
+
         // GET: /Transactions/Create
         public IActionResult Create()
         {

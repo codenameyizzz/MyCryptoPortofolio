@@ -1,0 +1,119 @@
+@model IEnumerable<MyCryptoPortfolio.Domain.Entities.Transaction>
+@using MyCryptoPortfolio.Domain.Entities
+
+@{
+    ViewData["Title"] = "Transaction History";
+}
+
+<div class="min-h-screen py-8">
+    
+    <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+        <div class="flex items-center gap-4">
+            <a asp-action="Index" class="p-2 rounded-xl bg-white border border-slate-200 text-slate-500 hover:text-brand-600 hover:border-brand-200 transition shadow-sm">
+                <i class="ph-bold ph-arrow-left text-xl"></i>
+            </a>
+            <div>
+                <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">History</h1>
+                <p class="text-slate-500">Riwayat lengkap semua aktivitas transaksi Anda.</p>
+            </div>
+        </div>
+        
+        <a asp-action="Create" class="inline-flex items-center justify-center px-6 py-2.5 font-semibold text-white transition-all duration-200 bg-brand-600 rounded-xl hover:bg-brand-700 shadow-lg shadow-brand-500/30">
+            <i class="ph-bold ph-plus mr-2"></i> Transaksi Baru
+        </a>
+    </div>
+
+    <div class="bg-white rounded-[2rem] shadow-xl border border-slate-100 overflow-hidden">
+        
+        <div class="overflow-x-auto">
+            <table class="w-full whitespace-nowrap">
+                <thead class="bg-slate-50 border-b border-slate-100">
+                    <tr>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-slate-400 uppercase tracking-wider">Date</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-slate-400 uppercase tracking-wider">Asset</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-slate-400 uppercase tracking-wider">Type</th>
+                        <th class="px-6 py-4 text-right text-xs font-bold text-slate-400 uppercase tracking-wider">Price (IDR)</th>
+                        <th class="px-6 py-4 text-right text-xs font-bold text-slate-400 uppercase tracking-wider">Quantity</th>
+                        <th class="px-6 py-4 text-right text-xs font-bold text-slate-400 uppercase tracking-wider">Fee</th>
+                        <th class="px-6 py-4 text-right text-xs font-bold text-slate-400 uppercase tracking-wider">Total Amount</th>
+                        <th class="px-6 py-4 text-center text-xs font-bold text-slate-400 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-50">
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="8" class="px-6 py-12 text-center text-slate-400 italic">
+                                Belum ada riwayat transaksi.
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var item in Model)
+                        {
+                            <tr class="hover:bg-slate-50/80 transition group">
+                                <td class="px-6 py-4">
+                                    <div class="flex flex-col">
+                                        <span class="font-bold text-slate-700">@item.Date.ToString("dd MMM yyyy")</span>
+                                        <span class="text-xs text-slate-400">@item.Date.ToString("HH:mm")</span>
+                                    </div>
+                                </td>
+
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 font-bold text-xs">
+                                            @item.Ticker.Substring(0, 1)
+                                        </div>
+                                        <span class="font-bold text-slate-800">@item.Ticker</span>
+                                    </div>
+                                </td>
+
+                                <td class="px-6 py-4">
+                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold @(item.Type == TransactionType.Buy ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-700")">
+                                        <i class="@(item.Type == TransactionType.Buy ? "ph-bold ph-arrow-down-left" : "ph-bold ph-arrow-up-right")"></i>
+                                        @item.Type.ToString().ToUpper()
+                                    </span>
+                                </td>
+
+                                <td class="px-6 py-4 text-right font-medium text-slate-600">
+                                    @item.Price.ToString("N0")
+                                </td>
+
+                                <td class="px-6 py-4 text-right font-bold text-slate-800">
+                                    @item.Quantity.ToString("N4")
+                                </td>
+
+                                <td class="px-6 py-4 text-right text-xs text-slate-500">
+                                    @(item.Fee > 0 ? item.Fee.ToString("N0") : "-")
+                                </td>
+
+                                <td class="px-6 py-4 text-right font-bold text-slate-900">
+                                    @item.TotalAmount.ToString("N0")
+                                </td>
+
+                                <td class="px-6 py-4 text-center">
+                                    <div class="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="p-2 text-brand-600 hover:bg-brand-50 rounded-lg transition" title="Edit">
+                                            <i class="ph-bold ph-pencil-simple"></i>
+                                        </a>
+                                        <form asp-action="Delete" asp-route-id="@item.Id" method="post" onsubmit="return confirm('Hapus transaksi ini secara permanen?');">
+                                            <button type="submit" class="p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition" title="Delete">
+                                                <i class="ph-bold ph-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="bg-slate-50 px-6 py-4 border-t border-slate-100 flex justify-between items-center text-xs text-slate-500">
+            <span>Total: @Model.Count() Transactions</span>
+            <span>Data ditampilkan secara real-time dari database.</span>
+        </div>
+    </div>
+</div>
