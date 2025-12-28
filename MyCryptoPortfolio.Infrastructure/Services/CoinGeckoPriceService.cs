@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Caching.Memory;
 using MyCryptoPortfolio.Domain.Interfaces;
 using Newtonsoft.Json.Linq;
 
@@ -6,48 +7,78 @@ namespace MyCryptoPortfolio.Infrastructure.Services
     public class CoinGeckoPriceService : IPriceService
     {
         private readonly HttpClient _httpClient;
+        private readonly IMemoryCache _cache; // Memori penyimpanan sementara
 
-        public CoinGeckoPriceService(HttpClient httpClient)
+        // Daftar Aset yang Didukung (Bisa ditambah manual)
+        public static readonly Dictionary<string, string> SupportedCoins = new()
+        {
+            { "BTC", "bitcoin" },
+            { "ETH", "ethereum" },
+            { "USDT", "tether" },
+            { "BNB", "binancecoin" },
+            { "SOL", "solana" },
+            { "XRP", "ripple" },
+            { "USDC", "usd-coin" },
+            { "ADA", "cardano" },
+            { "AVAX", "avalanche-2" },
+            { "DOGE", "dogecoin" },
+            { "DOT", "polkadot" },
+            { "MATIC", "matic-network" },
+            { "SHIB", "shiba-inu" },
+            { "LTC", "litecoin" },
+            // Tambahkan koin lain di sini, format: { "TICKER", "id-coingecko" }
+        };
+
+        public CoinGeckoPriceService(HttpClient httpClient, IMemoryCache cache)
         {
             _httpClient = httpClient;
+            _cache = cache;
         }
 
         public async Task<decimal> GetPriceAsync(string ticker)
         {
-            // 1. Mapping Ticker ke ID CoinGecko
-            var coinId = GetCoinId(ticker);
-            if (string.IsNullOrEmpty(coinId)) return 0; // Jika koin tidak dikenal, anggap harga 0
+            string cleanTicker = ticker.ToUpper().Trim();
+            string cacheKey = $"PRICE_{cleanTicker}"; // Kunci memori, misal "PRICE_BTC"
 
-            try
+            // Cek Memori dulu (Cache)
+            return await _cache.GetOrCreateAsync(cacheKey, async entry =>
             {
-                // 2. Panggil API CoinGecko
-                var response = await _httpClient.GetStringAsync($"https://api.coingecko.com/api/v3/simple/price?ids={coinId}&vs_currencies=usd");
-                
-                // 3. Baca JSON hasilnya
-                var json = JObject.Parse(response);
-                var price = json[coinId]?["usd"]?.Value<decimal>();
+                // ATURAN 1: Simpan harga selama 10 menit. 
+                // Selama 10 menit ke depan, aplikasi TIDAK AKAN tanya ke API lagi.
+                // Ini membuat grafik STABIL dan loading INSTAN.
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10);
 
-                return price ?? 0;
-            }
-            catch
-            {
-                return 0;
-            }
+                if (!SupportedCoins.TryGetValue(cleanTicker, out string coinId))
+                {
+                    return 0m; // Aset tidak dikenal
+                }
+
+                try
+                {
+                    // Tambahkan User-Agent agar tidak dianggap bot spammer
+                    _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("MyCryptoPortfolio/1.0");
+
+                    var url = $"https://api.coingecko.com/api/v3/simple/price?ids={coinId}&vs_currencies=idr";
+                    var response = await _httpClient.GetStringAsync(url);
+                    var json = JObject.Parse(response);
+
+                    // Ambil harga
+                    var price = json[coinId]?["idr"]?.Value<decimal>();
+                    return price ?? 0m;
+                }
+                catch
+                {
+                    // ATURAN 2: Jika API Gagal (Rate Limit/Internet Mati),
+                    // Jangan simpan nilai 0 ini lama-lama. Coba lagi dalam 2 detik.
+                    entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(2);
+                    return 0m; 
+                }
+            });
         }
 
-        private string GetCoinId(string ticker)
+        public Dictionary<string, string> GetCoinList()
         {
-            return ticker.ToLower() switch
-            {
-                "btc" => "bitcoin",
-                "eth" => "ethereum",
-                "sol" => "solana",
-                "bnb" => "binancecoin",
-                "xrp" => "ripple",
-                "doge" => "dogecoin",
-                "ada" => "cardano",
-                _ => "" 
-            };
+            return SupportedCoins;
         }
     }
 }

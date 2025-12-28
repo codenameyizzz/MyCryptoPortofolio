@@ -13,6 +13,16 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpClient<IPriceService, CoinGeckoPriceService>();
 
+// --- TAMBAHAN PENTING 1: Database ---
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// --- TAMBAHAN PENTING 2: Daftarkan Memory Cache ---
+builder.Services.AddMemoryCache(); // <--- JANGAN LEWATKAN INI
+
+// --- TAMBAHAN PENTING 3: Daftarkan Service & HTTP Client ---
+builder.Services.AddHttpClient<IPriceService, CoinGeckoPriceService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

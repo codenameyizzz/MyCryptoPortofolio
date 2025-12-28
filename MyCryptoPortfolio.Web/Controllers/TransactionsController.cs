@@ -55,10 +55,14 @@ namespace MyCryptoPortfolio.Web.Controllers
             return View(viewModel);
         }
 
+        // GET: /Transactions/Create
         public IActionResult Create()
         {
+            ViewBag.CoinList = _priceService.GetCoinList(); 
+
             var viewModel = new TransactionViewModel
             {
+                Date = DateTime.Today,
                 TypeOptions = new List<SelectListItem>
                 {
                     new SelectListItem { Value = "Buy", Text = "Buy (Beli)" },
@@ -66,6 +70,17 @@ namespace MyCryptoPortfolio.Web.Controllers
                 }
             };
             return View(viewModel);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetLatestPrice(string ticker)
+        {
+            if (string.IsNullOrWhiteSpace(ticker)) return Json(0);
+
+            // Panggil Service CoinGecko yang sudah kita buat (sudah ada Cache-nya juga)
+            var price = await _priceService.GetPriceAsync(ticker);
+            
+            return Json(price);
         }
 
         [HttpPost]

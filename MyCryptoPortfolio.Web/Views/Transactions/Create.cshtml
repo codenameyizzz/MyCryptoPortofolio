@@ -6,19 +6,17 @@
 
 <div class="min-h-[80vh] flex items-center justify-center">
     <div class="w-full max-w-xl">
-        
         <a asp-action="Index" class="inline-flex items-center text-slate-500 hover:text-slate-800 mb-6 transition">
             <i class="ph ph-arrow-left text-lg mr-2"></i> Back to Dashboard
         </a>
 
         <div class="bg-white rounded-[2rem] shadow-xl border border-slate-100 overflow-hidden relative">
-            
             <div class="h-2 bg-gradient-to-r from-brand-500 via-accent-500 to-pink-500"></div>
             
             <div class="p-8 sm:p-10">
                 <div class="text-center mb-10">
                     <h2 class="text-3xl font-extrabold text-slate-900">Add Asset</h2>
-                    <p class="text-slate-500 mt-2">Catat transaksi pembelian atau penjualan Anda.</p>
+                    <p class="text-slate-500 mt-2">Masukkan aset investasi baru Anda.</p>
                 </div>
 
                 <form asp-action="Create" method="post" class="space-y-6">
@@ -29,9 +27,29 @@
                         <div class="col-span-2">
                             <label asp-for="Ticker" class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Asset Ticker</label>
                             <div class="relative">
-                                <i class="ph ph-currency-btc absolute left-4 top-3.5 text-xl text-slate-400"></i>
-                                <input asp-for="Ticker" class="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 transition uppercase placeholder:normal-case font-bold text-slate-800" placeholder="e.g. BTC" />
+                                <i class="ph ph-magnifying-glass absolute left-4 top-3.5 text-xl text-slate-400"></i>
+                                
+                                <input asp-for="Ticker" 
+                                       list="coinSuggestions" 
+                                       id="tickerInput"
+                                       class="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 transition uppercase placeholder:normal-case font-bold text-slate-800" 
+                                       placeholder="Cari koin (e.g. BTC, ETH)" autocomplete="off" />
+
+                                <datalist id="coinSuggestions">
+                                    @if (ViewBag.CoinList != null)
+                                    {
+                                        foreach (var coin in (Dictionary<string, string>)ViewBag.CoinList)
+                                        {
+                                            <option value="@coin.Key">@coin.Key - @coin.Value.ToUpper()</option>
+                                        }
+                                    }
+                                </datalist>
+                                
+                                <div id="priceLoading" class="hidden absolute right-4 top-3.5">
+                                    <i class="ph ph-spinner animate-spin text-brand-500 text-xl"></i>
+                                </div>
                             </div>
+                            <p id="tickerError" class="text-rose-500 text-xs mt-1 hidden">⚠️ Koin tidak ditemukan / API Error.</p>
                             <span asp-validation-for="Ticker" class="text-rose-500 text-xs mt-1 block"></span>
                         </div>
 
@@ -46,8 +64,10 @@
                         </div>
 
                         <div class="col-span-2 sm:col-span-1">
-                            <label asp-for="Price" class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Price (IDR)</label>
-                            <input asp-for="Price" type="number" step="any" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 transition font-medium text-slate-700" placeholder="0" />
+                            <label asp-for="Price" class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
+                                Price (IDR) <span class="text-brand-500 text-[10px] ml-1 bg-brand-50 px-2 py-0.5 rounded-full hidden" id="liveBadge">LIVE</span>
+                            </label>
+                            <input asp-for="Price" id="priceInput" type="number" step="any" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 transition font-medium text-slate-700" placeholder="0" />
                         </div>
 
                         <div class="col-span-2 sm:col-span-1">
@@ -59,7 +79,6 @@
                             <label asp-for="Fee" class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Fees (Optional)</label>
                             <input asp-for="Fee" type="number" step="any" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 transition font-medium text-slate-700" placeholder="0" />
                         </div>
-
                     </div>
 
                     <button type="submit" class="w-full mt-8 bg-slate-900 text-white font-bold py-4 rounded-xl shadow-lg hover:bg-brand-600 hover:shadow-brand-500/30 active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2">
@@ -70,3 +89,55 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        const tickerInput = document.getElementById('tickerInput');
+        const priceInput = document.getElementById('priceInput');
+        const loadingIcon = document.getElementById('priceLoading');
+        const liveBadge = document.getElementById('liveBadge');
+        const tickerError = document.getElementById('tickerError'); // Pesan error baru
+
+        tickerInput.addEventListener('change', async function() {
+            const ticker = this.value;
+            
+            if (ticker && ticker.length >= 2) {
+                loadingIcon.classList.remove('hidden');
+                priceInput.classList.add('opacity-50');
+                liveBadge.classList.add('hidden');
+                tickerError.classList.add('hidden'); // Sembunyikan error lama
+
+                try {
+                    const response = await fetch(`/Transactions/GetLatestPrice?ticker=${ticker}`);
+                    
+                    if (response.ok) {
+                        const price = await response.json();
+                        
+                        if (price > 0) {
+                            // SUKSES: Harga Ditemukan
+                            priceInput.value = price;
+                            priceInput.classList.add('bg-green-50', 'text-green-700', 'border-green-300');
+                            setTimeout(() => {
+                                priceInput.classList.remove('bg-green-50', 'text-green-700', 'border-green-300');
+                            }, 1000);
+                            liveBadge.classList.remove('hidden');
+                        } else {
+                            // GAGAL: Harga 0 (Koin tidak terdaftar)
+                            priceInput.value = 0;
+                            tickerError.classList.remove('hidden'); // Tampilkan pesan error
+                            tickerError.innerText = "⚠️ Koin '" + ticker + "' tidak didukung atau API sibuk.";
+                        }
+                    }
+                } catch (error) {
+                    console.error("Error:", error);
+                    tickerError.classList.remove('hidden');
+                } finally {
+                    loadingIcon.classList.add('hidden');
+                    priceInput.classList.remove('opacity-50');
+                }
+            }
+        });
+    </script>
+}
