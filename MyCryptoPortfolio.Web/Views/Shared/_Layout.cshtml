@@ -68,13 +68,24 @@
                 </a>
                 
                 <div class="flex gap-1 bg-slate-100/50 p-1 rounded-xl">
+                    <a asp-controller="Home" asp-action="Index" 
+                        class="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" ? "bg-white text-brand-600 shadow-sm" : "text-slate-500 hover:text-slate-900 hover:bg-white/50")">
+                        News
+                    </a>
+
                     <a asp-controller="Transactions" asp-action="Index" 
                        class="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Transactions" ? "bg-white text-brand-600 shadow-sm" : "text-slate-500 hover:text-slate-900 hover:bg-white/50")">
                        Portfolio
                     </a>
+
                     <a asp-controller="Market" asp-action="Index" 
                        class="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Market" ? "bg-white text-brand-600 shadow-sm" : "text-slate-500 hover:text-slate-900 hover:bg-white/50")">
                        Market
+                    </a>
+
+                    <a asp-controller="Transactions" asp-action="History" 
+                        class="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 @(ViewContext.RouteData.Values["Action"]?.ToString() == "History" ? "bg-white text-brand-600 shadow-sm" : "text-slate-500 hover:text-slate-900 hover:bg-white/50")">
+                        History
                     </a>
                 </div>
             </div>
