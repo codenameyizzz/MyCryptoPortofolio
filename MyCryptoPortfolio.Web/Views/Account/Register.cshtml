@@ -1,27 +1,67 @@
 @model MyCryptoPortfolio.Web.ViewModels.RegisterViewModel
 @{ ViewData["Title"] = "Register"; }
 
-<h2>Register</h2>
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Register" method="post">
-            <div asp-validation-summary="All" class="text-danger"></div>
-            <div class="mb-3">
-                <label asp-for="Email" class="form-label"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
+<div class="flex justify-center items-center min-h-[calc(100vh-200px)] py-8">
+    <div class="w-full max-w-md">
+        <div class="glass rounded-3xl shadow-xl overflow-hidden p-8 sm:p-10 relative">
+            
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-gradient-to-bl from-accent-500 to-brand-500 rounded-2xl mx-auto flex items-center justify-center text-white text-3xl font-bold shadow-lg mb-4">
+                    <i class="ph ph-user-plus"></i>
+                </div>
+                <h2 class="text-3xl font-extrabold text-slate-800 tracking-tight">Create Account</h2>
+                <p class="text-slate-500 mt-2 text-sm">Join us to start tracking your portfolio.</p>
             </div>
-            <div class="mb-3">
-                <label asp-for="Password" class="form-label"></label>
-                <input asp-for="Password" class="form-control" />
-                <span asp-validation-for="Password" class="text-danger"></span>
+
+            <form asp-action="Register" method="post" class="space-y-5">
+                <div asp-validation-summary="All" class="text-red-500 text-xs font-medium text-center bg-red-50 p-2 rounded-lg border border-red-100" style="display:none;"></div> <div>
+                    <label asp-for="Email" class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1 ml-1"></label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                            <i class="ph ph-envelope-simple text-xl"></i>
+                        </div>
+                        <input asp-for="Email" class="w-full pl-11 pr-4 py-3 bg-white/50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent transition-all duration-200" placeholder="name@example.com" />
+                    </div>
+                    <span asp-validation-for="Email" class="text-red-500 text-xs mt-1 ml-1 block"></span>
+                </div>
+
+                <div>
+                    <label asp-for="Password" class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1 ml-1"></label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                            <i class="ph ph-lock-key text-xl"></i>
+                        </div>
+                        <input asp-for="Password" type="password" class="w-full pl-11 pr-4 py-3 bg-white/50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent transition-all duration-200" placeholder="Create a password" />
+                    </div>
+                    <span asp-validation-for="Password" class="text-red-500 text-xs mt-1 ml-1 block"></span>
+                </div>
+
+                <div>
+                    <label asp-for="ConfirmPassword" class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1 ml-1"></label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                            <i class="ph ph-check-circle text-xl"></i>
+                        </div>
+                        <input asp-for="ConfirmPassword" type="password" class="w-full pl-11 pr-4 py-3 bg-white/50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent transition-all duration-200" placeholder="Confirm password" />
+                    </div>
+                    <span asp-validation-for="ConfirmPassword" class="text-red-500 text-xs mt-1 ml-1 block"></span>
+                </div>
+
+                <button type="submit" class="w-full py-3.5 px-4 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl shadow-lg transform transition hover:-translate-y-0.5 active:translate-y-0 duration-200 mt-2">
+                    Create Account
+                </button>
+            </form>
+
+            <div class="mt-8 text-center">
+                <p class="text-slate-500 text-sm">
+                    Already have an account? 
+                    <a asp-action="Login" class="font-bold text-accent-600 hover:text-brand-600 transition ml-1">Log in here</a>
+                </p>
             </div>
-            <div class="mb-3">
-                <label asp-for="ConfirmPassword" class="form-label"></label>
-                <input asp-for="ConfirmPassword" class="form-control" />
-                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-            </div>
-            <button type="submit" class="btn btn-primary">Register</button>
-        </form>
+        </div>
     </div>
 </div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
