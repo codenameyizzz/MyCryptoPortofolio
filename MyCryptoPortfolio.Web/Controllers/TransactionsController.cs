@@ -4,9 +4,11 @@ using MyCryptoPortfolio.Domain.Entities;
 using MyCryptoPortfolio.Infrastructure.Data;
 using MyCryptoPortfolio.Web.ViewModels;
 using MyCryptoPortfolio.Domain.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MyCryptoPortfolio.Web.Controllers
 {
+    [Authorize]
     public class TransactionsController : Controller
     {
         private readonly ApplicationDbContext _context;

@@ -10,10 +10,11 @@
 using System;
 using System.Reflection;
 
+[assembly: Microsoft.AspNetCore.Identity.UI.UIFrameworkAttribute("Bootstrap5")]
 [assembly: System.Reflection.AssemblyCompanyAttribute("MyCryptoPortfolio.Web")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f41263eb467ad9129059713fcd712cc4e05aff15")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9ec393b3d8f1edcfd3a9a23f529ecd0a7783264c")]
 [assembly: System.Reflection.AssemblyProductAttribute("MyCryptoPortfolio.Web")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MyCryptoPortfolio.Web")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

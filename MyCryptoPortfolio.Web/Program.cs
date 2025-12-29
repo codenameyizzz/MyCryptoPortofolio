@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using MyCryptoPortfolio.Infrastructure.Data;
 using MyCryptoPortfolio.Domain.Interfaces;
 using MyCryptoPortfolio.Infrastructure.Services;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,14 +14,27 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpClient<IPriceService, CoinGeckoPriceService>();
 
-// --- TAMBAHAN PENTING 1: Database ---
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// --- TAMBAHAN PENTING 2: Daftarkan Memory Cache ---
-builder.Services.AddMemoryCache(); // <--- JANGAN LEWATKAN INI
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => {
+    // Konfigurasi password (opsional, sesuaikan kebutuhan)
+    options.Password.RequireDigit = false;
+    options.Password.RequiredLength = 6;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = false;
+})
+.AddEntityFrameworkStores<ApplicationDbContext>()
+.AddDefaultTokenProviders();
 
-// --- TAMBAHAN PENTING 3: Daftarkan Service & HTTP Client ---
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Account/Login";
+    options.AccessDeniedPath = "/Account/AccessDenied";
+});
+
+builder.Services.AddMemoryCache();
+
 builder.Services.AddHttpClient<IPriceService, CoinGeckoPriceService>();
 
 var app = builder.Build();
@@ -33,8 +47,10 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
