@@ -8,16 +8,18 @@ Dibangun dengan prinsip **Clean Architecture**, aplikasi ini memisahkan logika b
 
 ## Daftar Isi
 
-- [Teknologi yang Digunakan](#️-teknologi-yang-digunakan)
-- [Prasyarat](#-prasyarat-prerequisites)
-- [ Instalasi &amp; Setup Awal](#️-instalasi--setup-awal)
+- [Teknologi yang Digunakan](#teknologi-yang-digunakan)
+- [Prasyarat](#prasyarat-prerequisites)
+- [Instalasi dan Setup Awal](#instalasi--setup-awal)
   - [1. Clone Repository](#1-clone-repository)
   - [2. Konfigurasi Database](#2-konfigurasi-database)
   - [3. Terapkan Migrasi Database](#3-terapkan-migrasi-database-database-update)
-- [ Cara Menjalankan Aplikasi](#️-cara-menjalankan-aplikasi-build--run)
-- [ Panduan Fitur &amp; Penggunaan](#-panduan-fitur--penggunaan)
-- [ Penjelasan Teknis](#-penjelasan-teknis-under-the-hood)
-- [ Troubleshooting](#-troubleshooting-masalah-umum)
+- [Cara Menjalankan Aplikasi](#cara-menjalankan-aplikasi-build--run)
+- [Panduan Fitur dan Penggunaan](#panduan-fitur--penggunaan)
+- [Penjelasan Teknis](#penjelasan-teknis-under-the-hood)
+- [Update Fitur: Autentikasi dan Autorisasi Pengguna](#update-fitur-autentikasi-dan-autorisasi-pengguna)
+- [Troubleshooting](#troubleshooting-masalah-umum)
+
 
 ---
 
@@ -201,6 +203,206 @@ Aplikasi ini menggunakan **CoinGecko Public API** untuk data harga.
 
 ---
 
+
+## Update Fitur: Autentikasi dan Autorisasi Pengguna
+
+Pembaruan ini mengintegrasikan ASP.NET Core Identity untuk mengamankan aplikasi. Pengguna harus melakukan registrasi dan login terlebih dahulu untuk mengakses halaman manajemen portofolio.
+
+### Ringkasan Konsep
+
+- Autentikasi (authentication) memastikan siapa pengguna yang sedang mengakses aplikasi (misalnya melalui login).
+- Autorisasi (authorization) menentukan apa yang boleh dilakukan pengguna setelah terautentikasi (misalnya hanya pengguna login yang dapat mengakses halaman portofolio).
+
+Pada implementasi ini, autentikasi menggunakan mekanisme cookie authentication bawaan ASP.NET Core Identity. Setelah login berhasil, server menerbitkan cookie autentikasi. Setiap request berikutnya membawa cookie tersebut untuk membuktikan sesi pengguna.
+
+### Teknologi dan Library yang Digunakan
+
+- ASP.NET Core Identity: framework untuk manajemen akun, login, register, dan keamanan pengguna.
+- Entity Framework Core + IdentityDbContext: penyimpanan data pengguna dan otorisasi ke database.
+- PostgreSQL: penyimpanan tabel-tabel Identity (AspNetUsers, AspNetRoles, AspNetUserRoles, AspNetUserClaims, dan sebagainya).
+- Tailwind CSS (UI): perapihan tampilan halaman Login dan Register.
+
+### Detail Implementasi Autentikasi
+
+Bagian ini menjelaskan alur autentikasi yang umum pada ASP.NET Core Identity dan yang biasanya diimplementasikan pada controller Account.
+
+#### 1. Registrasi (Register)
+
+Alur registrasi pada umumnya:
+
+1) Pengguna membuka halaman Register dan mengisi email serta password.
+2) Data divalidasi melalui ViewModel (misalnya menggunakan DataAnnotations seperti Required, EmailAddress, StringLength, Compare).
+3) Aplikasi membuat akun baru menggunakan UserManager.
+4) Jika pembuatan akun berhasil, aplikasi dapat langsung melakukan sign-in (opsional) atau mengarahkan pengguna untuk login.
+
+Komponen yang terlibat:
+
+- RegisterViewModel: memegang field input dan aturan validasi.
+- UserManager<IdentityUser>: membuat dan menyimpan user (password akan di-hash secara aman).
+
+#### 2. Login
+
+Alur login pada umumnya:
+
+1) Pengguna membuka halaman Login dan mengisi kredensial.
+2) Data divalidasi melalui LoginViewModel.
+3) Aplikasi memverifikasi kredensial menggunakan SignInManager.
+4) Jika sukses, aplikasi menerbitkan cookie autentikasi lalu mengarahkan ke halaman yang dituju.
+
+Komponen yang terlibat:
+
+- LoginViewModel: memegang field input login.
+- SignInManager<IdentityUser>: melakukan verifikasi password dan mengelola sesi (cookie).
+- Konfigurasi cookie: mengatur halaman redirect login, durasi cookie, dan perilaku akses tidak sah.
+
+Catatan tentang keamanan:
+
+- Identity menyimpan password dalam bentuk hash (bukan plaintext).
+- Fitur lockout dapat diaktifkan agar akun terkunci sementara setelah beberapa kali gagal login.
+
+#### 3. Logout
+
+Logout umumnya dilakukan dengan:
+
+- SignInManager.SignOutAsync() untuk menghapus cookie autentikasi.
+
+Praktik yang disarankan:
+
+- Melakukan logout melalui metode POST dan menambahkan antiforgery token untuk mencegah CSRF.
+
+### Detail Implementasi Autorisasi
+
+Autorisasi diterapkan untuk memastikan hanya pengguna yang sudah login yang dapat mengakses fitur tertentu.
+
+#### 1. Proteksi Halaman dengan Atribut Authorize
+
+Contoh penerapan:
+
+- Menambahkan atribut [Authorize] pada controller atau action yang mengelola transaksi atau portofolio.
+
+Jika ada halaman yang harus tetap publik:
+
+- Tambahkan [AllowAnonymous] pada action tertentu (misalnya halaman Home atau halaman Login/Register).
+
+#### 2. Redirect Otomatis ke Halaman Login
+
+Saat pengguna mengakses halaman yang diproteksi tanpa login, aplikasi akan mengarahkan ke halaman Login. Perilaku ini biasanya dikonfigurasi pada cookie options (LoginPath) atau konfigurasi Identity.
+
+### Konfigurasi Teknis yang Umum di Program.cs
+
+Secara umum, konfigurasi yang diperlukan mencakup:
+
+1) Registrasi DbContext yang mengarah ke PostgreSQL.
+2) Registrasi Identity dan penyimpanan data Identity ke DbContext.
+3) Mengaktifkan middleware authentication dan authorization.
+
+Contoh struktur konfigurasi (disesuaikan dengan implementasi Anda):
+
+- services.AddDbContext<ApplicationDbContext>(...);
+- services.AddIdentity<IdentityUser, IdentityRole>(options => { ... })
+  .AddEntityFrameworkStores<ApplicationDbContext>()
+  .AddDefaultTokenProviders();
+
+- app.UseAuthentication();
+- app.UseAuthorization();
+
+Opsi yang sering diatur pada Identity:
+
+- Password policy: panjang minimal, kombinasi huruf besar, huruf kecil, angka, dan karakter non-alphanumeric.
+- Lockout: jumlah percobaan login gagal sebelum terkunci sementara.
+- User: require unique email, dan sebagainya.
+
+Opsi yang sering diatur pada cookie:
+
+- LoginPath: lokasi endpoint login (misalnya /Account/Login).
+- AccessDeniedPath: lokasi endpoint ketika akses ditolak.
+- ExpireTimeSpan dan SlidingExpiration: durasi sesi.
+
+### Daftar Perubahan File (Modifikasi Utama)
+
+Berikut adalah komponen utama yang ditambahkan atau dimodifikasi dalam pembaruan ini:
+
+#### 1. Layer Web (MyCryptoPortfolio.Web)
+
+- Controllers
+  - AccountController.cs (baru): menangani logika Login, Register, dan Logout.
+  - TransactionsController.cs: ditambahkan atribut [Authorize] sehingga hanya pengguna yang sudah login yang dapat mengaksesnya.
+- ViewModels
+  - LoginViewModel.cs: model untuk data input login.
+  - RegisterViewModel.cs: model untuk validasi input pendaftaran akun.
+- Views
+  - Views/Account/Login.cshtml: tampilan halaman login.
+  - Views/Account/Register.cshtml: tampilan halaman pendaftaran pengguna.
+  - Views/Shared/_Layout.cshtml: navigasi diperbarui untuk menampilkan tombol Login/Register atau Logout sesuai status pengguna.
+- Konfigurasi
+  - Program.cs: registrasi service Identity dan middleware Authentication/Authorization.
+
+#### 2. Layer Infrastructure (MyCryptoPortfolio.Infrastructure)
+
+- Database Context
+  - ApplicationDbContext.cs: diubah agar mewarisi IdentityDbContext untuk mendukung tabel pengguna.
+
+### Panduan Instalasi dan Eksekusi Pembaruan
+
+Jika Anda baru meng-clone pembaruan ini, lakukan langkah berikut agar database sinkron dengan fitur autentikasi.
+
+#### Langkah 1: Install Paket NuGet (jika belum)
+
+Jalankan perintah ini di dalam folder MyCryptoPortfolio.Web:
+
+```bash
+dotnet add package Microsoft.AspNetCore.Identity.EntityFrameworkCore --version 9.0.0
+```
+
+Catatan: jika paket sudah tercantum di file project (.csproj), Anda dapat melewati langkah ini.
+
+#### Langkah 2: Migrasi Database
+
+Karena ada penambahan tabel Identity (User dan Role), Anda perlu memastikan migrasi sudah dibuat dan diterapkan.
+
+Pastikan Anda berada di terminal folder MyCryptoPortfolio.Web, lalu jalankan:
+
+1) Membuat file migrasi (jika belum ada di repo)
+
+```bash
+dotnet ef migrations add AddIdentitySchema --project ../MyCryptoPortfolio.Infrastructure --startup-project .
+```
+
+2) Menerapkan ke database (update database)
+
+```bash
+dotnet ef database update --project ../MyCryptoPortfolio.Infrastructure --startup-project .
+```
+
+Catatan:
+- Parameter --project mengarah ke project yang berisi DbContext (Infrastructure), sedangkan --startup-project mengarah ke Web.
+- Untuk Windows PowerShell, Anda juga bisa memakai path ..\MyCryptoPortfolio.Infrastructure.
+
+#### Langkah 3: Jalankan Aplikasi
+
+Setelah database terupdate, jalankan aplikasi seperti biasa:
+
+```bash
+dotnet run
+```
+
+### Alur Penggunaan
+
+1. Register: buka menu Register, masukkan email dan password. Akun akan dibuat dan disimpan pada tabel AspNetUsers.
+2. Login: gunakan akun yang baru dibuat untuk masuk. Jika berhasil, menu Portfolio dapat diakses.
+3. Portfolio (secured): halaman portofolio terkunci. Jika mengakses tanpa login melalui URL, sistem mengalihkan ke halaman Login.
+4. Logout: klik tombol Logout di navbar untuk mengakhiri sesi.
+
+### Catatan Pengembangan Lanjutan (Opsional)
+
+Jika Anda ingin memperketat otorisasi atau memisahkan data per pengguna, beberapa pengembangan yang umum dilakukan:
+
+- Role-based authorization:
+  - Tambahkan role (misalnya Admin, User) dan gunakan [Authorize(Roles = "Admin")] pada halaman admin.
+- Policy-based authorization:
+  - Definisikan policy (misalnya OnlyVerifiedUser) lalu gunakan [Authorize(Policy = "OnlyVerifiedUser")].
+- Kepemilikan data (data ownership):
+  - Tambahkan kolom OwnerUserId pada entitas portofolio/transaksi, lalu filter query berdasarkan User.Identity agar setiap pengguna hanya melihat datanya sendiri.
 ## Troubleshooting (Masalah Umum)
 
 **Q: Saya mengetik Ticker koin tapi harganya tidak muncul otomatis/Error?**
