@@ -2,7 +2,7 @@
 
 **MyCryptoPortfolio** adalah aplikasi manajemen portofolio investasi modern berbasis web yang dibangun dengan **ASP.NET Core 9.0**. Aplikasi ini dirancang untuk memantau aset Kripto (dan Saham) secara real-time, menghitung keuntungan/kerugian (PnL), serta menyediakan visualisasi data yang intuitif.
 
-Dibangun dengan prinsip **Clean Architecture**, aplikasi ini memisahkan logika bisnis, akses data, dan tampilan pengguna untuk memastikan kode yang rapi, mudah dirawat, dan *scalable*.
+Dibangun dengan prinsip Clean Architecture, aplikasi ini memisahkan logika bisnis, akses data, dan tampilan pengguna untuk memastikan kode yang rapi, mudah dirawat, dan *scalable*.
 
 ---
 
@@ -19,7 +19,6 @@ Dibangun dengan prinsip **Clean Architecture**, aplikasi ini memisahkan logika b
 - [Penjelasan Teknis](#penjelasan-teknis-under-the-hood)
 - [Update Fitur: Autentikasi dan Autorisasi Pengguna](#update-fitur-autentikasi-dan-autorisasi-pengguna)
 - [Troubleshooting](#troubleshooting-masalah-umum)
-
 
 ---
 
@@ -203,7 +202,6 @@ Aplikasi ini menggunakan **CoinGecko Public API** untuk data harga.
 
 ---
 
-
 ## Update Fitur: Autentikasi dan Autorisasi Pengguna
 
 Pembaruan ini mengintegrasikan ASP.NET Core Identity untuk mengamankan aplikasi. Pengguna harus melakukan registrasi dan login terlebih dahulu untuk mengakses halaman manajemen portofolio.
@@ -238,7 +236,7 @@ Alur registrasi pada umumnya:
 Komponen yang terlibat:
 
 - RegisterViewModel: memegang field input dan aturan validasi.
-- UserManager<IdentityUser>: membuat dan menyimpan user (password akan di-hash secara aman).
+- UserManager`<IdentityUser>`: membuat dan menyimpan user (password akan di-hash secara aman).
 
 #### 2. Login
 
@@ -252,7 +250,7 @@ Alur login pada umumnya:
 Komponen yang terlibat:
 
 - LoginViewModel: memegang field input login.
-- SignInManager<IdentityUser>: melakukan verifikasi password dan mengelola sesi (cookie).
+- SignInManager`<IdentityUser>`: melakukan verifikasi password dan mengelola sesi (cookie).
 - Konfigurasi cookie: mengatur halaman redirect login, durasi cookie, dan perilaku akses tidak sah.
 
 Catatan tentang keamanan:
@@ -298,11 +296,10 @@ Secara umum, konfigurasi yang diperlukan mencakup:
 
 Contoh struktur konfigurasi (disesuaikan dengan implementasi Anda):
 
-- services.AddDbContext<ApplicationDbContext>(...);
+- services.AddDbContext`<ApplicationDbContext>`(...);
 - services.AddIdentity<IdentityUser, IdentityRole>(options => { ... })
-  .AddEntityFrameworkStores<ApplicationDbContext>()
+  .AddEntityFrameworkStores`<ApplicationDbContext>`()
   .AddDefaultTokenProviders();
-
 - app.UseAuthentication();
 - app.UseAuthorization();
 
@@ -375,6 +372,7 @@ dotnet ef database update --project ../MyCryptoPortfolio.Infrastructure --startu
 ```
 
 Catatan:
+
 - Parameter --project mengarah ke project yang berisi DbContext (Infrastructure), sedangkan --startup-project mengarah ke Web.
 - Untuk Windows PowerShell, Anda juga bisa memakai path ..\MyCryptoPortfolio.Infrastructure.
 
@@ -403,6 +401,7 @@ Jika Anda ingin memperketat otorisasi atau memisahkan data per pengguna, beberap
   - Definisikan policy (misalnya OnlyVerifiedUser) lalu gunakan [Authorize(Policy = "OnlyVerifiedUser")].
 - Kepemilikan data (data ownership):
   - Tambahkan kolom OwnerUserId pada entitas portofolio/transaksi, lalu filter query berdasarkan User.Identity agar setiap pengguna hanya melihat datanya sendiri.
+
 ## Troubleshooting (Masalah Umum)
 
 **Q: Saya mengetik Ticker koin tapi harganya tidak muncul otomatis/Error?**
